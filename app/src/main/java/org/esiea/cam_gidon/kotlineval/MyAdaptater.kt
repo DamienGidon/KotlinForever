@@ -15,8 +15,7 @@ class MyAdapter(private val myDataset: List<venue>) :
 
     class MyViewHolder(val item: View) : RecyclerView.ViewHolder(item)
 
-    override fun onCreateViewHolder(parent: ViewGroup,
-                                    viewType: Int): MyAdapter.MyViewHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyAdapter.MyViewHolder {
         // create a new view
         val itemView = LayoutInflater.from(parent.context).inflate(R.layout.item_venue, parent, false)
         // set the view's size, margins, paddings and layout parameters
@@ -32,6 +31,8 @@ class MyAdapter(private val myDataset: List<venue>) :
         val address = holder.itemView.findViewById(R.id.address) as TextView
         val distance = holder.itemView.findViewById(R.id.distance) as TextView
         val rate = holder.itemView.findViewById(R.id.rate) as TextView
+
+        // Fill textView
         name.text = myDataset[position].name
         address.text = myDataset[position].location.address + " " + myDataset[position].location.city + " " + myDataset[position].location.postalCode + ", " + myDataset[position].location.country
         distance.text = myDataset[position].distance
