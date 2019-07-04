@@ -64,11 +64,11 @@ class MainActivity : AppCompatActivity() {
 
         //Call api get rate for each venue
         listVenue.forEach() {
-            //Call api to get rate
+            //Call api to get rate with it.id
             run("https://api.foursquare.com/v2/venues/" + it.id +"?client_id=AYPL0UXZZ1WEQRVQV0S5KGRHIIRBCTQN4QCUSBZZV2CDO1SI&client_secret=MAQ0CIXWCFUU1SXFYLL1EDP5PDFIDA2BR40JBHDLWEJFOQKR &ll="+lat+","+long+"&query=sushi&v=20190412")
             //fill it with the rate from the API
             //TODO
-            listVenue.find { x -> x.id == it.id }?.rate = (Math.random() * 10).toInt();
+            listVenue.find { x -> x.id == it.id }?.rate = (Math.random() * 10).toInt(); // Random for fun
         }
 
         // Set Adapter
@@ -92,7 +92,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun run(url: String) {
-        // Create request
+        // Create request with OkHttp
         val request = Request.Builder()
             .url(url)
             .build()
