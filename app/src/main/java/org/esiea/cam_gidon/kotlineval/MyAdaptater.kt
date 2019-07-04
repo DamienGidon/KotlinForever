@@ -26,7 +26,7 @@ class MyAdapter(private val myDataset: List<venue>) :
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
         val ven: venue = myDataset[position]
 
-        // Set data to TextView
+        // Read object
         val name = holder.itemView.findViewById(R.id.name) as TextView
         val address = holder.itemView.findViewById(R.id.address) as TextView
         val distance = holder.itemView.findViewById(R.id.distance) as TextView
@@ -35,7 +35,7 @@ class MyAdapter(private val myDataset: List<venue>) :
         // Fill textView
         name.text = myDataset[position].name
         address.text = myDataset[position].location.address + " " + myDataset[position].location.city + " " + myDataset[position].location.postalCode + ", " + myDataset[position].location.country
-        distance.text = myDataset[position].distance
+        distance.text = myDataset[position].distance +"km"
         rate.text = myDataset[position].rate.toString() +"/10"
 
     }

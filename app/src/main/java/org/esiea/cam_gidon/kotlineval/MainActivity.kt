@@ -19,6 +19,7 @@ import layout.venue
 import okhttp3.*
 import org.json.JSONObject
 import java.io.IOException
+import kotlin.random.Random
 
 class MainActivity : AppCompatActivity() {
     private lateinit var recyclerView: RecyclerView
@@ -31,6 +32,7 @@ class MainActivity : AppCompatActivity() {
     private var hasNetwork = false
     private var locationGps : Location? = null
     private var locationNetwork : Location? = null
+    private lateinit var listVenue: List<venue>
 
     private val client = OkHttpClient()
 
@@ -49,17 +51,29 @@ class MainActivity : AppCompatActivity() {
         getLocation()
         val lat = locationGps!!.latitude
         val long = locationGps!!.longitude
+        Toast.makeText(this, "Latitude : " + lat + ", Longitude : " + long, Toast.LENGTH_LONG).show()
 
-        // Call api
-        val call = run("https://api.foursquare.com/v2/venues/search?client_id=AYPL0UXZZ1WEQRVQV0S5KGRHIIRBCTQN4QCUSBZZV2CDO1SI&client_secret=MAQ0CIXWCFUU1SXFYLL1EDP5PDFIDA2BR40JBHDLWEJFOQKR &ll="+lat+","+long+"&query=sushi&v=20190412")
+        // Call api to get all sushi near us
+        run("https://api.foursquare.com/v2/venues/search?client_id=AYPL0UXZZ1WEQRVQV0S5KGRHIIRBCTQN4QCUSBZZV2CDO1SI&client_secret=MAQ0CIXWCFUU1SXFYLL1EDP5PDFIDA2BR40JBHDLWEJFOQKR &ll="+lat+","+long+"&query=sushi&v=20190412")
 
         // Mock
-        val t = listOf(venue(name = "tour", distance = "13km", location = location(address = "24 rue des beaunes", postalCode = "78400", country = "France", city = "Chatou"), rate = 10),
-            venue(name = "rat", distance = "30km", location = location(address = "24 rue des beaunes", postalCode = "78400", country = "France", city = "Paris"), rate = 10))
+        listVenue = mutableListOf(venue(id = "4b8d6ce7f964a52006fb32e3", name = "SushiShop", distance = "13", location = location(address = "24 rue des beaunes", postalCode = "78400", country = "France", city = "Chatou"), rate = 3),
+            venue(id = "4b8d6ce7f964a52006fb32e2", name = "Bento", distance = "30", location = location(address = "3 rue desmoulins", postalCode = "78150", country = "France", city = "Chatou"), rate = 7),
+            venue(id = "4b8d6ce7f964a52006fb32e1", name = "Pizza pour tous", distance = "20", location = location(address = "24 rue des pizza", postalCode = "78400", country = "France", city = "Chatou"), rate = 10),
+            venue(id = "4b8d6ce7f964a52006fb32e0", name = "Super U", distance = "8", location = location(address = "24 rue des souris", postalCode = "78400", country = "France", city = "Chatou"), rate = 5))
+
+        //Call api get rate for each venue
+        listVenue.forEach() {
+            //Call api to get rate
+            run("https://api.foursquare.com/v2/venues/" + it.id +"?client_id=AYPL0UXZZ1WEQRVQV0S5KGRHIIRBCTQN4QCUSBZZV2CDO1SI&client_secret=MAQ0CIXWCFUU1SXFYLL1EDP5PDFIDA2BR40JBHDLWEJFOQKR &ll="+lat+","+long+"&query=sushi&v=20190412")
+            //fill it with the rate from the API
+            //TODO
+            listVenue.find { x -> x.id == it.id }?.rate = (Math.random() * 10).toInt();
+        }
 
         // Set Adapter
         viewManager = LinearLayoutManager(this)
-        viewAdapter = MyAdapter(t)
+        viewAdapter = MyAdapter(listVenue)
 
         // Create recycler
         val recycler = findViewById(R.id.recycler) as RecyclerView
@@ -86,6 +100,7 @@ class MainActivity : AppCompatActivity() {
         client.newCall(request).enqueue(object : Callback {
             override fun onFailure(call: Call, e: IOException) {}
             override fun onResponse(call: Call, response: Response) {
+                // Make an object from the json received
                 json = response.body()?.string() ?: ""
                 obj = JSONObject(json)
             }
@@ -101,7 +116,6 @@ class MainActivity : AppCompatActivity() {
         hasNetwork = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)
         if(hasGps || hasNetwork) {
             if(hasGps) {
-                Log.d("CodeAndroidLocation", "hasGps")
                 locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 5000, 0F, object : LocationListener {
                     override fun onLocationChanged(location: Location?) {
                         if(location!=null) {
@@ -109,17 +123,11 @@ class MainActivity : AppCompatActivity() {
                         }
                     }
 
-                    override fun onStatusChanged(provider: String?, status: Int, extras: Bundle?) {
-                        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-                    }
+                    override fun onStatusChanged(provider: String?, status: Int, extras: Bundle?) {}
 
-                    override fun onProviderEnabled(provider: String?) {
-                        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-                    }
+                    override fun onProviderEnabled(provider: String?) {}
 
-                    override fun onProviderDisabled(provider: String?) {
-                        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-                    }
+                    override fun onProviderDisabled(provider: String?) {}
 
                 })
                 val localGpsLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER)
@@ -136,34 +144,16 @@ class MainActivity : AppCompatActivity() {
                         }
                     }
 
-                    override fun onStatusChanged(provider: String?, status: Int, extras: Bundle?) {
-                        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-                    }
+                    override fun onStatusChanged(provider: String?, status: Int, extras: Bundle?) { }
 
-                    override fun onProviderEnabled(provider: String?) {
-                        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-                    }
+                    override fun onProviderEnabled(provider: String?) { }
 
-                    override fun onProviderDisabled(provider: String?) {
-                        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-                    }
+                    override fun onProviderDisabled(provider: String?) {}
 
                 })
                 val localNetworkLocation = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER)
                 if(localNetworkLocation!=null) {
                     locationNetwork = localNetworkLocation
-                }
-            }
-
-            Toast.makeText(this, "Hi there! This is a Toast.", Toast.LENGTH_LONG).show()
-
-            if(locationGps!=null && locationNetwork!=null) {
-                if(locationGps!!.accuracy > locationNetwork!!.accuracy) {
-                    Log.d("CodeAndroidLocation", "Network latitude: " + locationNetwork!!.latitude)
-                    Log.d("CodeAndroidLocation", "Network longitude: " + locationNetwork!!.longitude)
-                } else {
-                    Log.d("CodeAndroidLocation", "GPS latitude: " + locationGps!!.latitude)
-                    Log.d("CodeAndroidLocation", "GPS longitude: " + locationGps!!.longitude)
                 }
             }
         } else {
