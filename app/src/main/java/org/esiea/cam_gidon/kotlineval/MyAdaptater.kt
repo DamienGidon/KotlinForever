@@ -10,7 +10,7 @@ import android.widget.TextView
 import android.widget.Toast
 import layout.venue
 
-class MyAdapter(private val myDataset: List<venue>) :
+class MyAdapter(private val myDataset: MutableList<venue>) :
     RecyclerView.Adapter<MyAdapter.MyViewHolder>() {
 
     class MyViewHolder(val item: View) : RecyclerView.ViewHolder(item)
@@ -36,7 +36,11 @@ class MyAdapter(private val myDataset: List<venue>) :
         name.text = myDataset[position].name
         address.text = myDataset[position].location.address + " " + myDataset[position].location.city + " " + myDataset[position].location.postalCode + ", " + myDataset[position].location.country
         distance.text = myDataset[position].distance +"km"
-        rate.text = myDataset[position].rate.toString() +"/10"
+        if(myDataset[position].rate == -1) {
+            rate.text = "Aucune note"
+        } else {
+            rate.text = myDataset[position].rate.toString() +"/10"
+        }
 
     }
 
